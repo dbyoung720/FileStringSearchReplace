@@ -51,6 +51,7 @@ begin
 
       cNode.AddChild('RuntimeLibrary').Text := 'MultiThreaded';
       xmlDocument.SaveToFile(strFileName);
+      Writeln(Format('%s ÃÌº” MT ±‡“Î', [strFileName]));
     end;
   finally
     xmlDocument.Active := False;
