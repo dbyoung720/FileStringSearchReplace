@@ -90,6 +90,12 @@
         <Cfg_2>true</Cfg_2>
         <Base>true</Base>
     </PropertyGroup>
+    <PropertyGroup Condition="('$(Platform)'=='Win32' and '$(Cfg_2)'=='true') or '$(Cfg_2_Win32)'!=''">
+        <Cfg_2_Win32>true</Cfg_2_Win32>
+        <CfgParent>Cfg_2</CfgParent>
+        <Cfg_2>true</Cfg_2>
+        <Base>true</Base>
+    </PropertyGroup>
     <PropertyGroup Condition="'$(Base)'!=''">
         <DCC_E>false</DCC_E>
         <DCC_F>false</DCC_F>
@@ -198,6 +204,7 @@
         <VerInfo_Keys>CompanyName=dbyoung@sina.com;FileDescription=文件的字符串搜索替换;FileVersion=2.0.0.0;InternalName=;LegalCopyright=dbyoung@sina.com;LegalTrademarks=;OriginalFilename=fsr.exe;ProductName=文件的字符串搜索替换;ProductVersion=2.0.0.0;Comments=文件的字符串搜索替换;ProgramID=com.embarcadero.$(MSBuildProjectName)</VerInfo_Keys>
         <Icon_MainIcon>fsr.ico</Icon_MainIcon>
         <Manifest_File>(None)</Manifest_File>
+        <DCC_UnitSearchPath>.\NativeXml\NativeXml;.\NativeXml\general;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2)'!=''">
         <DCC_Define>DEBUG;$(DCC_Define)</DCC_Define>
@@ -215,6 +222,14 @@
     </PropertyGroup>
     <PropertyGroup Condition="'$(Cfg_2_OSX64)'!=''">
         <BT_BuildType>Debug</BT_BuildType>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(Cfg_2_Win32)'!=''">
+        <VerInfo_Locale>1033</VerInfo_Locale>
+        <VerInfo_Keys>CompanyName=;FileDescription=$(MSBuildProjectName);FileVersion=1.0.0.0;InternalName=;LegalCopyright=;LegalTrademarks=;OriginalFilename=;ProductName=$(MSBuildProjectName);ProductVersion=1.0.0.0;Comments=;ProgramID=com.embarcadero.$(MSBuildProjectName)</VerInfo_Keys>
+        <Icon_MainIcon>fsr.ico</Icon_MainIcon>
+        <Manifest_File>(None)</Manifest_File>
+        <DCC_UnitSearchPath>.\NativeXml\NativeXml;.\NativeXml\general;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
+        <DCC_Namespace>Vcl;$(DCC_Namespace)</DCC_Namespace>
     </PropertyGroup>
     <ItemGroup>
         <DelphiCompile Include="$(MainSource)">

@@ -7,13 +7,12 @@ program fsr;
 {$R *.res}
 
 uses
+  NativeXml,
   Winapi.Windows,
   System.StrUtils,
   System.Types,
   System.IOUtils,
   System.Classes,
-  Xml.XMLDoc,
-  Xml.XMLIntf,
   System.SysUtils;
 
 procedure ShowHelp;
@@ -29,33 +28,27 @@ end;
 { 给 VC 工程添加 MT 编译 }
 procedure VCAddMT(const strFileName: string);
 var
-  xmlDocument: IXMLDocument;
-  pNode      : IXMLNode;
-  gNode      : IXMLNode;
-  cNode      : IXMLNode;
+  xmlDocument: TNativeXml;
+  pNode      : TXmlNode;
+  gNode      : TXmlNode;
+  cNode      : TXmlNode;
 begin
-  xmlDocument := TXMLDocument.Create(nil);
+  xmlDocument := TNativeXml.Create(nil);
   xmlDocument.LoadFromFile(strFileName);
-  xmlDocument.Active := True;
+  xmlDocument.XmlFormat := xfReadable;
   try
-    pNode := xmlDocument.DocumentElement;
-    if pNode <> nil then
-    begin
-      gNode := pNode.ChildNodes.FindNode('ItemDefinitionGroup');
-      if gNode = nil then
-        Exit;
+    pNode := xmlDocument.RootNodes[1];
+    if pNode = nil then
+      Exit;
 
-      cNode := gNode.ChildNodes.FindNode('ClCompile');
-      if cNode = nil then
-        cNode := gNode.AddChild('ClCompile');
+    gNode       := pNode.NodeFindOrCreate('ItemDefinitionGroup').NodeFindOrCreate('ClCompile');
+    cNode       := gNode.NodeNew('RuntimeLibrary');
+    cNode.Value := 'MultiThreaded';
 
-      cNode.AddChild('RuntimeLibrary').Text := 'MultiThreaded';
-      xmlDocument.SaveToFile(strFileName);
-      Writeln(Format('%s 添加 MT 编译', [strFileName]));
-    end;
+    xmlDocument.SaveToFile(strFileName);
+    Writeln(Format('%s 添加 MT 编译', [strFileName]));
   finally
-    xmlDocument.Active := False;
-    xmlDocument        := nil;
+    xmlDocument.free;
   end;
 end;
 
@@ -111,7 +104,7 @@ begin
       lstFile.Clear;
     end;
   finally
-    lstFile.Free;
+    lstFile.free;
   end;
 end;
 
