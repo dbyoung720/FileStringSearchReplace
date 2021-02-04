@@ -3,7 +3,7 @@
         <ProjectGuid>{6F00AB85-C47F-47F5-BE74-ECD17D9C9A02}</ProjectGuid>
         <MainSource>fsr.dpr</MainSource>
         <Base>True</Base>
-        <Config Condition="'$(Config)'==''">Release</Config>
+        <Config Condition="'$(Config)'==''">Debug</Config>
         <TargetedPlatforms>5249</TargetedPlatforms>
         <AppType>Console</AppType>
         <FrameworkType>None</FrameworkType>
@@ -230,6 +230,7 @@
         <Manifest_File>(None)</Manifest_File>
         <DCC_UnitSearchPath>.\NativeXml\NativeXml;.\NativeXml\general;$(DCC_UnitSearchPath)</DCC_UnitSearchPath>
         <DCC_Namespace>Vcl;$(DCC_Namespace)</DCC_Namespace>
+        <Debugger_RunParams>&apos;F:\Github\VCMake\VSBuild\opencv\x86\static&apos;,&apos;*python*.vcxproj&apos;,&apos;&lt;/AdditionalDependencies&gt;&apos;,&apos;BBB&apos;,1,0,&apos;UTF8&apos;</Debugger_RunParams>
     </PropertyGroup>
     <ItemGroup>
         <DelphiCompile Include="$(MainSource)">

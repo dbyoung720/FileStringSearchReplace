@@ -78,7 +78,13 @@ begin
     for sFile in arrFile do
     begin
       bReplace := False;
-      lstFile.LoadFromFile(sFile, ft);
+      try
+        lstFile.LoadFromFile(sFile, ft);
+      except
+        lstFile.Clear;
+        Continue;
+      end;
+
       for I := 0 to lstFile.Count - 1 do
       begin
         strTemp := lstFile.Strings[I];
@@ -190,6 +196,7 @@ begin
     Exit;
   end;
 
+  Writeln(Format('共计找到 %d 个文件', [Length(arrFiles)]));
   SearchAndReplaceInFile(arrFiles, bCase, strSearch, strReplace, strEncoding, bVCAddMT);
 end;
 
