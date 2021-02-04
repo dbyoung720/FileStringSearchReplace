@@ -46,7 +46,7 @@ begin
     cNode.Value := 'MultiThreaded';
 
     xmlDocument.SaveToFile(strFileName);
-    Writeln(Format('%s ÃÌº” MT ±‡“Î', [strFileName]));
+    Writeln(Format('ÃÌº” MT ±‡“Î  %s', [strFileName]));
   finally
     xmlDocument.free;
   end;
