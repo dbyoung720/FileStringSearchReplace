@@ -102,7 +102,7 @@ begin
       end;
 
       { 给 VC 工程文件添加 MT 编译 }
-      if bVCAddMT and (not bReplace) and SameText(ExtractFileExt(sFile), '.vcxproj') then
+      if bVCAddMT and (not bReplace) and SameText(ExtractFileExt(sFile), '.vcxproj') and FileExists(sFile) then
       begin
         VCAddMT(sFile);
       end;
