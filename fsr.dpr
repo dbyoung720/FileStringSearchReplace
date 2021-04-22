@@ -20,9 +20,10 @@ begin
   Writeln('功能 : 在文件中进行字符串的搜索替换');
   Writeln('作者 : dbyoung@sina.com');
   Writeln('时间 : 2020-08-16');
-  Writeln('格式 : fsr [文件路径],[文件类型],[待替换字符串],[替换字符串],[是否包含子目录],[是否区分大小写],[文件保存编码格式],[VC 工程添加 MT 编译]');
-  Writeln('示范 : fsr ''C:\Windows'',''*.txt'',''AAA'',''BBB'',1,0,''utf8'', 1');
-  Writeln('注意 : 参数用符号,分割；中间不能有空格。前四个参数必须，后四个参数可省略');
+  Writeln('格式 : fsr [文件路径],[文件类型],[待替换字符串],[替换字符串],([待替换的字符串的行中必须包含特定字符串才替换],[是否搜索子目录],[是否区分大小写],[文件保存编码格式],[是否给 VC 工程添加 MT 编译])');
+  Writeln('说明 : 参数用符号,分割；中间不能有空格。前四个参数必须，后五个参数可省略');
+  Writeln('示范 : fsr ''C:\Windows'',''*.txt'',''AAA'',''BBB'',''CCC'',1,0,''utf8'',1');
+  Writeln('注意 : 文件保存编码格式支持：ASCII、ANSI、UTF7、UTF8、UNICODE');
 end;
 
 { 给 VC 工程添加 MT 编译 }
@@ -52,7 +53,7 @@ begin
   end;
 end;
 
-procedure SearchAndReplaceInFile(const arrFile: TStringDynArray; const bCase: Boolean; const strSearch, strReplace, strEncoding: string; const bVCAddMT: Boolean);
+procedure SearchAndReplaceInFile(const arrFile: TStringDynArray; const bCase: Boolean; const strSearch, strReplace, strInclude, strEncoding: string; const bVCAddMT: Boolean);
 var
   sFile   : String;
   lstFile : TStringList;
@@ -89,10 +90,36 @@ begin
       begin
         strTemp := lstFile.Strings[I];
         if bCase then
-          lstFile.Strings[I] := lstFile.Strings[I].Replace(strSearch, strReplace, [rfReplaceAll])
+        begin
+          { 区分大小写 }
+          if Trim(strInclude) = '' then
+          begin
+            lstFile.Strings[I] := lstFile.Strings[I].Replace(strSearch, strReplace, [rfReplaceAll]);
+          end
+          else
+          begin
+            if Pos(strInclude, lstFile.Strings[I]) > 0 then
+            begin
+              lstFile.Strings[I] := lstFile.Strings[I].Replace(strSearch, strReplace, [rfReplaceAll]);
+            end;
+          end;
+        end
         else
-          lstFile.Strings[I] := lstFile.Strings[I].Replace(strSearch, strReplace, [rfReplaceAll, rfIgnoreCase]);
-        bReplace             := bReplace or (not SameText(strTemp, lstFile.Strings[I]));
+        begin
+          { 不区分大小写 }
+          if Trim(strInclude) = '' then
+          begin
+            lstFile.Strings[I] := lstFile.Strings[I].Replace(strSearch, strReplace, [rfReplaceAll, rfIgnoreCase]);
+          end
+          else
+          begin
+            if Pos(LowerCase(strInclude), LowerCase(lstFile.Strings[I])) > 0 then
+            begin
+              lstFile.Strings[I] := lstFile.Strings[I].Replace(strSearch, strReplace, [rfReplaceAll, rfIgnoreCase]);
+            end;
+          end;
+        end;
+        bReplace := bReplace or (not SameText(strTemp, lstFile.Strings[I]));
       end;
 
       if bReplace then
@@ -134,6 +161,7 @@ var
   arrParam   : TStringDynArray;
   I          : Integer;
   bVCAddMT   : Boolean;
+  strInclude : String;
 begin
   { 参数必须不少于 4 个 }
   strParam := string(GetCommandLine);
@@ -151,33 +179,42 @@ begin
   strSearch   := MiddleStr(arrParam[2]);
   strReplace  := MiddleStr(arrParam[3]);
 
-  { 其它 4 个参数 }
+  { 其它 5 个参数 }
+  strInclude  := '';
   bSubDir     := True;
   bCase       := False;
   bVCAddMT    := False;
   strEncoding := 'ASCII';
 
-  if Length(arrParam) = 8 then
+  if Length(arrParam) = 9 then
   begin
-    bSubDir     := StrToBool(arrParam[4]);
-    bCase       := StrToBool(arrParam[5]);
-    strEncoding := MiddleStr(arrParam[6]);
-    bVCAddMT    := StrToBool(arrParam[7]);
+    strInclude  := arrParam[4];
+    bSubDir     := StrToBool(arrParam[5]);
+    bCase       := StrToBool(arrParam[6]);
+    strEncoding := MiddleStr(arrParam[7]);
+    bVCAddMT    := StrToBool(arrParam[8]);
+  end
+  else if Length(arrParam) = 8 then
+  begin
+    strInclude  := arrParam[4];
+    bSubDir     := StrToBool(arrParam[5]);
+    bCase       := StrToBool(arrParam[6]);
+    strEncoding := MiddleStr(arrParam[7]);
   end
   else if Length(arrParam) = 7 then
   begin
-    bSubDir     := StrToBool(arrParam[4]);
-    bCase       := StrToBool(arrParam[5]);
-    strEncoding := MiddleStr(arrParam[6]);
+    strInclude := arrParam[4];
+    bSubDir    := StrToBool(arrParam[5]);
+    bCase      := StrToBool(arrParam[6]);
   end
   else if Length(arrParam) = 6 then
   begin
-    bSubDir := StrToBool(arrParam[4]);
-    bCase   := StrToBool(arrParam[5]);
+    strInclude := arrParam[4];
+    bSubDir    := StrToBool(arrParam[5]);
   end
   else if Length(arrParam) = 5 then
   begin
-    bSubDir := StrToBool(arrParam[4]);
+    strInclude := arrParam[4];
   end;
 
   if bVCAddMT then
@@ -197,7 +234,7 @@ begin
   end;
 
   Writeln(Format('共计找到 %d 个文件', [Length(arrFiles)]));
-  SearchAndReplaceInFile(arrFiles, bCase, strSearch, strReplace, strEncoding, bVCAddMT);
+  SearchAndReplaceInFile(arrFiles, bCase, strSearch, strReplace, strInclude, strEncoding, bVCAddMT);
 end;
 
 begin

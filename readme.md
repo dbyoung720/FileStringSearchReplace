@@ -1,3 +1,3 @@
 # Delphi CMD string replace in files
 
-Delphi 10.3
+Delphi 10.4.2
